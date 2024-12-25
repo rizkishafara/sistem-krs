@@ -30,14 +30,7 @@ func init() {
 	os.Setenv("SERVER_PORT", fmt.Sprintf("%v", config.ServerPort))
 	os.Setenv("DB", config.Db)
 	os.Setenv("DB_DSN", config.DbDsn)
-	// os.Setenv("SMTP_SENDER", config.SmtpSender)
-	// os.Setenv("SMTP_HOST", config.SmtpHost)
-	// os.Setenv("SMTP_PORT", fmt.Sprintf("%v", config.SmtpPort))
-	// os.Setenv("SMTP_USER", config.SmtpUser)
-	// os.Setenv("SMTP_PASS", config.SmtpPass)
 	os.Setenv("STARTLS", fmt.Sprintf("%v", config.StarTLS))
-	// os.Setenv("HOST", "localhost")
-	// os.Setenv("PORT", "1323")
 	os.Setenv("SECRET_KEY", "secret")
 	os.Setenv("GO_ENV", "development")
 }
@@ -76,7 +69,8 @@ func main() {
 	//public folder
 	e.Static("/public", "public")
 
-	router.Auth(e)
+	router.Mahasiswa(e)
+	router.Krs(e)
 
 	host := fmt.Sprintf("%s:%v", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	fmt.Println("Server started on", host)
@@ -87,7 +81,6 @@ func main() {
 
 	log.Printf("server started on %s\n", srv.Addr)
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		// e.Logger.Fatal(err)
 		fmt.Println("Error main", err.Error())
 	}
 }
