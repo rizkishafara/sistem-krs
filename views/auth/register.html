@@ -1,0 +1,78 @@
+{% extends "../template/template.html" %} {% block content %}
+<div class="">
+  <h4>Register User</h4>
+
+  <div>
+    <div class="card mx-auto" style="width: 40%">
+      <div class="card-body">
+        <form action="" id="formRegister">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              aria-describedby="usernameHelp"
+              required
+            />
+            <div id="usernameHelp" class="form-text">
+              Masukkan username anda
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Konfirmasi Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="confirmpassword"
+              name="confirmpassword"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Register
+          </button>
+        </form>
+        <div class="mx-auto" style="width: fit-content">
+          <small>Sudah punya akun? <a href="/login">login</a> </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script>
+  const formRegister = document.getElementById("formRegister");
+  formRegister.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(formRegister);
+    if (formData.get("password") !== formData.get("confirmpassword")) {
+      alert("Password dan konfirmasi password tidak sama");
+      return;
+    }
+    const response = await fetch("/register", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.status === 200) {
+      alert("Register berhasil");
+      window.location.href = "/login";
+    } else {
+      alert(result.message);
+    }
+  });
+</script>
+{% endblock %}

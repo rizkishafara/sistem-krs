@@ -1,0 +1,64 @@
+{% extends "../template/template.html" %} {% block content %}
+<div class="">
+  <h4>Login User</h4>
+
+  <div>
+    <div class="card mx-auto" style="width: 40%">
+      <div class="card-body">
+        <form action="" id="formLogin">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              aria-describedby="usernameHelp"
+              required
+            />
+            <div id="usernameHelp" class="form-text">
+              Masukkan username anda
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Login
+          </button>
+        </form>
+        <div class="mx-auto" style="width: fit-content">
+          <small>Belum punya akun? <a href="/register">register</a> </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script>
+  const formLogin = document.getElementById("formLogin");
+  formLogin.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(formLogin);
+    const response = await fetch("/login", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.status === 200) {
+      alert(result.message);
+
+      window.location.href = "/";
+    } else {
+      alert(result.message);
+    }
+  });
+</script>
+{% endblock %}
