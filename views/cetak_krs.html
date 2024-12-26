@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="w-100 text-center">
+        <h3>Kartu Rencana Studi</h3>
+      </div>
+      <div class="alert alert-success mt-3" role="alert">
+        <div class="row">
+          <div class="col">
+            <t class="fw-bold">Mahasiswa</t>: {{nama}} |
+            <t class="fw-bold">NIM</t>: {{nim}} | <t class="fw-bold">IPK</t>:
+            {{ipk}}
+          </div>
+          <div class="col-auto">
+            <a href="/" class="btn btn-sm btn-warning" id="btn-kembali"
+              >Kembali ke data Mahasiswa</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="w-100 mt-3">
+        <table
+          class="table table-bordered table-striped"
+          id="table-matkul"
+          style="width: 100%"
+        >
+          <thead>
+            <th>No</th>
+            <th>Mata Kuliah</th>
+            <th>SKS</th>
+            <th>Kelp</th>
+            <th>Ruangan</th>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <th></th>
+            <th>Total SKS</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tfoot>
+        </table>
+      </div>
+      <div class="mt-3">
+        <button class="btn btn-primary" id="btn-cetak">Cetak KRS</button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        let table = $("#table-matkul")
+          .DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            ajax: {
+              url: "/krs/{{id}}",
+              dataSrc: function (data) {
+                return data.data || [];
+              },
+            },
+            columns: [
+              {
+                data: null,
+                render: function (data, type, row, meta) {
+                  return meta.row + 1;
+                },
+              },
+              { data: "matakuliah" },
+              { data: "sks" },
+              { data: "kelp" },
+              { data: "ruangan" },
+            ],
+          })
+          .on("draw", function () {
+            let total = table
+              .column(2)
+              .data()
+              .reduce(function (a, b) {
+                return parseInt(a) + parseInt(b);
+              }, 0);
+            $(table.column(2).footer()).html(total);
+          });
+        $("#btn-cetak").on("click", async function (e) {
+          e.preventDefault;
+
+          //hide button
+          $(this).hide();
+          $("#btn-kembali").hide();
+
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF("p", "mm", "a4");
+          const content = $("body")[0];
+
+          const canvas = await html2canvas(content, {
+            scale: 2, // Kualitas tinggi
+          });
+
+          const imgData = canvas.toDataURL("image/png");
+          const imgWidth = 210;
+          const pageHeight = 297;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+
+          let position = 0;
+
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft > 0) {
+            position -= pageHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save("KRS.pdf");
+          $(this).show();
+          $("#btn-kembali").show();
+        });
+      });
+    </script>
+  </body>
+</html>

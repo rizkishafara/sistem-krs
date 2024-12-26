@@ -51,3 +51,18 @@ func DeleteKrsMhs(c echo.Context) error {
 	DeleteKrsMhs := models.DeletKrsMhs(id)
 	return c.JSON(http.StatusOK, DeleteKrsMhs)
 }
+func CetakKrsPage(c echo.Context) error {
+	id := c.QueryParam("id")
+	nama := c.QueryParam("nama")
+	nim := c.QueryParam("nim")
+	ipk := c.QueryParam("ipk")
+
+	data := pongo2.Context{
+		"title":      "Krs",
+		"id":         id,
+		"nama":       nama,
+		"nim":        nim,
+		"ipk":        ipk,
+	}
+	return c.Render(http.StatusOK, "views/cetak_krs.html", data)
+}

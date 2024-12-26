@@ -127,7 +127,7 @@
                 return `<div class="btn-group" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-sm btn-danger" onclick="delMhs('${data.id}')">Hapus</button>
                             <a href="/krs?id=${data.id}&nama=${data.namamhs}&nim=${data.nim}&ipk=${data.ipk}" type="button" class="btn btn-sm btn-primary">Edit</a>
-                            <button type="button" class="btn btn-sm btn-secondary">Lihat</button>
+                            <a href="/cetak-krs?id=${data.id}&nama=${data.namamhs}&nim=${data.nim}&ipk=${data.ipk}" type="button" class="btn btn-sm btn-secondary">Lihat</a>
                         </div>`;
               },
             },

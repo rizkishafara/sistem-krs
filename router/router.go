@@ -18,4 +18,6 @@ func Krs(e *echo.Echo) {
 	e.GET("/matakuliah", controllers.GetMatakuliah)
 	e.POST("/krs", controllers.AddKrsMhs)
 	e.DELETE("/krs/:id_jadwal", controllers.DeleteKrsMhs)
+
+	e.GET("/cetak-krs", controllers.CetakKrsPage)
 }
