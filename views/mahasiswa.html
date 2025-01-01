@@ -112,11 +112,10 @@
             {
               data: "matakuliah",
               render: function (data) {
-                return data != "null"
+                let matkul = JSON.parse(data);
+                return matkul.length > 0
                   ? function () {
-                      let matkul = JSON.parse(data);
-                      matkul = matkul.map((m) => m.matakuliah).join(", ");
-                      return matkul;
+                      return matkul.map((m) => m).join(", ");
                     }
                   : "-";
               },

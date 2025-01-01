@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"log"
 	"sistem-krs/db"
 	"sistem-krs/utils"
@@ -9,8 +8,22 @@ import (
 
 func GetMhs() utils.Respon {
 	dbEngine := db.ConnectDB()
+	defer dbEngine.Close() 
+
 	var Respon utils.Respon
-	datauser, err := dbEngine.QueryString("SELECT id, namamhs, nim, ipk, sks FROM inputmhs")
+
+	query := `
+		SELECT 
+			m.id, m.namamhs, m.nim, m.ipk, m.sks, 
+			JSON_ARRAYAGG(j.matakuliah) AS matakuliah 
+		FROM 
+			inputmhs m
+		LEFT JOIN 
+			jwl_mhs j ON m.id = j.mhs_id
+		GROUP BY 
+			m.id
+	`
+	datauser, err := dbEngine.QueryString(query)
 	if err != nil {
 		log.Println("error get mhs", err)
 		Respon.Status = 500
@@ -18,27 +31,12 @@ func GetMhs() utils.Respon {
 		return Respon
 	}
 
-	defer dbEngine.Close()
-
-	for i := 0; i < len(datauser); i++ {
-		id := datauser[i]["id"]
-		datakrs, err := dbEngine.QueryString("SELECT matakuliah FROM jwl_mhs WHERE mhs_id = ? ", id)
-		if err != nil {
-			log.Println("error get krs", err)
-			Respon.Status = 500
-			Respon.Message = err.Error()
-			return Respon
-		}
-		defer dbEngine.Close()
-		datakrsJSON, _ := json.Marshal(datakrs)
-		datauser[i]["matakuliah"] = string(datakrsJSON)
-	}
-
 	Respon.Status = 200
 	Respon.Data = datauser
 	Respon.Message = "success"
 	return Respon
 }
+
 func CreateMhs(namamhs, nim, ipk, sks, matakuliah string) utils.Respon {
 	dbEngine := db.ConnectDB()
 	var Respon utils.Respon
